@@ -32,6 +32,8 @@ foreach (var role in commonRoles)
 
 await File.WriteAllLinesAsync("common-roles.txt", commonRoles);
 
+Console.WriteLine($"Found {commonRoles.Count} common roles");
+
 public class User
 {
     public required string Name { get; set; }

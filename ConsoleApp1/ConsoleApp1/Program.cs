@@ -1,10 +1,21 @@
-﻿var users = new List<User>
+﻿var rawUsers = new List<RawUser>
 {
-    new User { Name = "John", Roles = new List<string> { "Admin", "User", "Dev", "Boss" } },
-    new User { Name = "Jane", Roles = new List<string> { "User", "Boss", "Dev" } },
-    new User { Name = "Jack", Roles = new List<string> { "User", "Dev" } },
-    new User { Name = "Jill", Roles = new List<string> { "User", "Dev" } },
+    new() { Name = "John", Roles = "Admin; User; Dev; Boss" },
+    new() { Name = "Jane", Roles = "User; Boss; Dev" },
+    new() { Name = "Jack", Roles = "User; Dev;" },
+    new() { Name = "Jill", Roles = "User; Dev;" },
 };
+
+var users = new List<User>();
+foreach (var rawUser in rawUsers)
+{
+    var user = new User
+    {
+        Name = rawUser.Name,
+        Roles = rawUser.Roles.Split(";").Select(r => r.Trim()).ToList()
+    };
+    users.Add(user);
+}
 
 var commonRoles = users
     .SelectMany(u => u.Roles)
@@ -25,4 +36,10 @@ public class User
 {
     public required string Name { get; set; }
     public required List<string> Roles { get; set; }
+}
+
+public class RawUser
+{
+    public required string Name { get; set; }
+    public required string Roles { get; set; }
 }

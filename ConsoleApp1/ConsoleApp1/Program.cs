@@ -1,47 +1,32 @@
-﻿var rawUsers = new List<RawUser>
+﻿var rawRoles = new List<RawUser>
 {
-    new() { Name = "John", Roles = "Admin; User; Dev; Boss" },
-    new() { Name = "Jane", Roles = "User; Boss; Dev" },
-    new() { Name = "Jack", Roles = "User; Dev;" },
-    new() { Name = "Jill", Roles = "User; Dev;" },
+    new("Admin; User; Dev; Boss"),
+    new("User; Boss; Dev"),
+    new("User; Dev;"),
+    new("User; Dev;"),
 };
 
-var users = new List<User>();
-foreach (var rawUser in rawUsers)
+var parsedRoles = new List<User>();
+foreach (var rawUser in rawRoles)
 {
-    var user = new User
-    {
-        Name = rawUser.Name,
-        Roles = rawUser.Roles.Split(";").Select(r => r.Trim()).ToList()
-    };
-    users.Add(user);
+    var roles = rawUser.Roles
+        .Split(";")
+        .Select(r => r.Trim())
+        .ToList();
+
+    parsedRoles.Add(new User(roles));
 }
 
-var commonRoles = users
+var commonRoles = parsedRoles
     .SelectMany(u => u.Roles)
     .GroupBy(r => r)
-    .Where(g => g.Count() == users.Count)
+    .Where(g => g.Count() == parsedRoles.Count)
     .Select(g => g.Key)
     .ToList();
 
-Console.WriteLine("Common roles:");
-foreach (var role in commonRoles)
-{
-    Console.WriteLine(role);
-}
-
 await File.WriteAllLinesAsync("common-roles.txt", commonRoles);
+Console.WriteLine($"Saved {commonRoles.Count} common roles to:\n{Path.GetFullPath("common-roles.txt")}");
 
-Console.WriteLine($"Found {commonRoles.Count} common roles");
+public record RawUser(string Roles);
 
-public class User
-{
-    public required string Name { get; set; }
-    public required List<string> Roles { get; set; }
-}
-
-public class RawUser
-{
-    public required string Name { get; set; }
-    public required string Roles { get; set; }
-}
+public record User(List<string> Roles);

@@ -34,12 +34,6 @@ await File.WriteAllLinesAsync("common-roles.txt", commonRoles);
 
 Console.WriteLine($"Found {commonRoles.Count} common roles");
 
-foreach (var user in users)
-{
-    var missingRoles = commonRoles.Except(user.Roles).ToList();
-    Console.WriteLine($"{user.Name} is missing {missingRoles.Count} roles");
-}
-
 public class User
 {
     public required string Name { get; set; }
